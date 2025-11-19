@@ -384,7 +384,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 4652a07c751b159429aa5b66127adc80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -460,8 +460,8 @@ LineRenderer:
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 0
-    textureScale: {x: 1, y: 1}
+    textureMode: 1
+    textureScale: {x: 3, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
   m_MaskInteraction: 0
@@ -495,7 +495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e2954f07589e6744a247469de4e196c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArrowRenderer
-  type: 0
+  type: 1
 --- !u!1 &1730074706
 GameObject:
   m_ObjectHideFlags: 0
