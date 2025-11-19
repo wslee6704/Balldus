@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class MoveTest : MonoBehaviour
@@ -9,14 +10,9 @@ public class MoveTest : MonoBehaviour
         
     }
 
-    void Update()
+
+    public void move(Vector2 dest)
     {
-        timer += Time.deltaTime;
-        if(timer >= 1f){
-            timer = 0f;
-            this.gameObject.transform.position += Vector3.right;
-            Debug.Log(this.gameObject.transform.position);
-        }
-  
+        this.transform.DOMove(dest, 0.3f);
     }
 }
