@@ -8,36 +8,36 @@ public class ArrowRenderer : MonoBehaviour
     private LineRenderer arrowLine = null;
 
     float headSize = 0.5f;
-    float maxLength = 5f;
+    float maxLength = 8f;
 
     private GameObject target;
+    Action<Vector3>[] actions = new Action<Vector3>[2];
 
     [SerializeField]
     InputType type;
+    ActionType actionType;
 
     void Awake()
     {
         arrowLine = GetComponent<LineRenderer>();
         this.target = transform.parent.gameObject;//자신을 사용하고 있는 부모를 따라간다
+        actions[(int)ActionType.Movement] = (endPos) => target.GetComponent<MoveTest>().move(endPos);
+        actions[(int)ActionType.Attack] = (pos) => Fire();
+    }
+
+    void Fire()
+    {
+        Debug.Log("쏴라!");
     }
     //오브젝트를 추적하여 그릴 수 있게한다
     void Init(GameObject target)
     {
         this.target = transform.parent.gameObject;
+        //maxLength = 플레이어의 이동거리
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        ///
-        /// 테스트용 코드
-        /// 마우스 입력방식과, 키보드 입력방식을 구분을 둔다
-        /// 
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     if (type == InputType.Mouse) type = InputType.Keyboard;
-        //     else type = InputType.Mouse;
-        // }
-
         if (type == InputType.Mouse) MouseCalculate();
         else KeyboardCalculate();
     }
@@ -45,7 +45,7 @@ public class ArrowRenderer : MonoBehaviour
 
     Vector3 mousePos;
     bool clickEnable = false;
-    Vector3 endPos, startPos, targetPos;
+    Vector3 endPos, startPointer, targetPos;
     float percentSize;//화살촉의 비율
 
     void MouseCalculate()//알까기 처럼 플레이어를 잡아당기는 것도 가능, 외부 공백에서 잡아당기는것도 가능
@@ -53,8 +53,8 @@ public class ArrowRenderer : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            startPos = mousePos;
-            startPos.z = 0f;
+            startPointer = mousePos;
+            startPointer.z = 0f;
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
             if (hit.collider != null)
             {
@@ -64,7 +64,7 @@ public class ArrowRenderer : MonoBehaviour
                 {
                     Debug.Log("이 오브젝트를 클릭했다!");
                     //clickEnable = true;
-                    startPos = target.transform.position;
+                    startPointer = target.transform.position;
                 }
             }
         }
@@ -72,13 +72,14 @@ public class ArrowRenderer : MonoBehaviour
         {
             Vector3 pointer = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             MaxLengthCorrection(pointer);
-            DrawArrow();
+            //ShapeRenderHelper.DrawArrow(arrowLine,targetPos,endPos,percentSize);
+            ShapeRenderHelper.DrawSemiCircle(arrowLine,targetPos,endPos,5);
         }
         else if (Input.GetMouseButtonUp(0))
         {
             //clickEnable = false;
             arrowLine.positionCount = 0;
-            target.GetComponent<MoveTest>().move(endPos);
+            actions[(int)actionType]?.Invoke(endPos);
         }
     }
 
@@ -87,7 +88,7 @@ public class ArrowRenderer : MonoBehaviour
         targetPos = target.transform.position;
         //카메라가 10f 떨어져있어서 초기화를 해준후 dist를 계산해야함
         pointer.z = 0f;
-        Vector3 dir = pointer - startPos;
+        Vector3 dir = pointer - startPointer;
         float dist = dir.magnitude;    // 실제 거리
 
         if (dist > maxLength)
@@ -130,35 +131,39 @@ public class ArrowRenderer : MonoBehaviour
     }
 
     Vector3 dirPointer = Vector3.zero;
-    float power = 3f;
+    float power = 10f;
     void KeyboardCalculate()
     {
         targetPos = target.transform.position;
+        startPointer = target.transform.position;
         // W ↑
         if (Input.GetKey(KeyCode.W))
-            dirPointer.y -= power * Time.fixedDeltaTime;
+            dirPointer.y -= power * Time.deltaTime;
 
         // S ↓
         if (Input.GetKey(KeyCode.S))
-            dirPointer.y += power * Time.fixedDeltaTime;
+            dirPointer.y += power * Time.deltaTime;
 
         // D →
         if (Input.GetKey(KeyCode.D))
-            dirPointer.x -= power * Time.fixedDeltaTime;
+            dirPointer.x -= power * Time.deltaTime;
 
         // A ←
         if (Input.GetKey(KeyCode.A))
-            dirPointer.x += power * Time.fixedDeltaTime;
+            dirPointer.x += power * Time.deltaTime;
 
+        // ★ 핵심: 원형 범위 제한 (반지름 maxRadius)
+        dirPointer = Vector3.ClampMagnitude(dirPointer, maxLength);
         MaxLengthCorrection(targetPos + dirPointer);
         if (dirPointer != Vector3.zero)
-            DrawArrow();
+            ShapeRenderHelper.DrawArrow(arrowLine,targetPos,endPos,percentSize);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            actions[(int)actionType]?.Invoke(endPos);
             arrowLine.positionCount = 0;
             dirPointer = Vector3.zero;
-            target.GetComponent<MoveTest>().move(endPos);
+            
         }
 
     }
@@ -169,5 +174,10 @@ public class ArrowRenderer : MonoBehaviour
     {
         Mouse,
         Keyboard,
+    }
+    private enum ActionType
+    {
+        Movement,
+        Attack
     }
 }

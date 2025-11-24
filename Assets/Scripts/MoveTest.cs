@@ -13,6 +13,6 @@ public class MoveTest : MonoBehaviour
 
     public void move(Vector2 dest)
     {
-        this.transform.DOMove(dest, 0.3f);
+        this.transform.DOMove(dest, 1f);
     }
 }
