@@ -12,6 +12,7 @@ public class ArrowRenderer : MonoBehaviour
 
     private GameObject target;
     Action<Vector3>[] actions = new Action<Vector3>[2];
+    private CircleCollider2D coll;
 
     [SerializeField]
     InputType type;
@@ -23,6 +24,7 @@ public class ArrowRenderer : MonoBehaviour
         this.target = transform.parent.gameObject;//자신을 사용하고 있는 부모를 따라간다
         actions[(int)ActionType.Movement] = (endPos) => target.GetComponent<MoveTest>().move(endPos);
         actions[(int)ActionType.Attack] = (pos) => Fire();
+        coll = target.GetComponent<CircleCollider2D>();
     }
 
     void Fire()
@@ -72,8 +74,8 @@ public class ArrowRenderer : MonoBehaviour
         {
             Vector3 pointer = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             MaxLengthCorrection(pointer);
-            //ShapeRenderHelper.DrawArrow(arrowLine,targetPos,endPos,percentSize);
-            ShapeRenderHelper.DrawSemiCircle(arrowLine,targetPos,endPos,5);
+            ShapeRenderHelper.DrawArrow(arrowLine, targetPos, endPos, percentSize);
+            //ShapeRenderHelper.DrawSemiCircle(arrowLine,targetPos,endPos,5);
         }
         else if (Input.GetMouseButtonUp(0))
         {
@@ -83,52 +85,54 @@ public class ArrowRenderer : MonoBehaviour
         }
     }
 
-    void MaxLengthCorrection(Vector3 pointer)//최대 길이 보정함수 
+    void MaxLengthCorrection(Vector3 pointer)
     {
         targetPos = target.transform.position;
-        //카메라가 10f 떨어져있어서 초기화를 해준후 dist를 계산해야함
-        pointer.z = 0f;
-        Vector3 dir = pointer - startPointer;
-        float dist = dir.magnitude;    // 실제 거리
+        pointer.z = 0;
 
-        if (dist > maxLength)
-        {
-            dir = dir.normalized * maxLength;
-        }
-        endPos = targetPos + (-dir);//알까기처럼 반대방향으로 해주기 위해 -를 해줌
-        //-dir만으로 계산을 한다면 z값에 오류가 난다고 한다
-        // 화살촉 비율 계산 (길이가 짧아도 문제 없도록)
-        float curLength = Mathf.Min(maxLength, dist);
+        Vector3 rawDir = pointer - startPointer;   // 사용자가 드래그한 방향
+        float rawDist = rawDir.magnitude;          // 드래그 크기
+        Vector3 dirNorm = rawDir.normalized;
+
+        // 1) 유저 입력거리와 최대거리 중 작은 것을 선택
+        float wantedDist = Mathf.Min(rawDist, maxLength);
+
+        // 2) Collider.Cast()로 실제 이동가능한 거리 계산
+        float safeDist = CastForDistance(-dirNorm, wantedDist);
+
+        // 3) 최종 이동거리 보정 후 endPos 계산
+        Vector3 finalDir = -dirNorm * safeDist;
+        endPos = targetPos + finalDir;
+
+        // 화살촉 비율 계산
+        float curLength = Mathf.Min(maxLength, rawDist);
         percentSize = headSize / curLength;
     }
 
-    void DrawArrow()
+
+    RaycastHit2D[] castHits = new RaycastHit2D[3];   // 작은 배열이면 충분
+
+    float CastForDistance(Vector2 dir, float maxDist)
     {
-
-        // LineRenderer 설정
-        arrowLine.positionCount = 4;
-
-        // 0: 시작점
-        arrowLine.SetPosition(0, targetPos);
-
-        // 1: 몸통 끝 (화살촉 직전)
-        arrowLine.SetPosition(1, Vector3.Lerp(targetPos, endPos, 0.999f - percentSize));
-
-        // 2: 화살촉 시작점
-        arrowLine.SetPosition(2, Vector3.Lerp(targetPos, endPos, 1 - percentSize));
-
-        // 3: 화살촉 끝점
-        arrowLine.SetPosition(3, endPos);
-
-        // 화살 굵기 커브
-        arrowLine.widthCurve = new AnimationCurve(
-            new Keyframe(0, 0.2f),
-            new Keyframe(0.999f - percentSize, 0.2f),
-            new Keyframe(1 - percentSize, 0.5f),
-            new Keyframe(1 - percentSize, 0.5f),
-            new Keyframe(1, 0f)
+        int hitCount = coll.Cast(
+            dir,            // 이동 방향 (normalized)
+            castHits,
+            maxDist         // 최대 이동거리
         );
+
+        if (hitCount > 0)
+        {
+            Debug.Log("충돌");
+            // ★ 여기서 distance는 “완전히 부딪히기 직전까지 이동 가능한 거리”
+            //   CircleCast와 달리 radius 계산이 이미 적용된 정확한 거리!
+            return castHits[0].distance;
+        }
+
+        // 충돌 없으면 그대로 maxDist
+        return maxDist;
     }
+
+
 
     Vector3 dirPointer = Vector3.zero;
     float power = 10f;
@@ -156,14 +160,14 @@ public class ArrowRenderer : MonoBehaviour
         dirPointer = Vector3.ClampMagnitude(dirPointer, maxLength);
         MaxLengthCorrection(targetPos + dirPointer);
         if (dirPointer != Vector3.zero)
-            ShapeRenderHelper.DrawArrow(arrowLine,targetPos,endPos,percentSize);
+            ShapeRenderHelper.DrawArrow(arrowLine, targetPos, endPos, percentSize);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             actions[(int)actionType]?.Invoke(endPos);
             arrowLine.positionCount = 0;
             dirPointer = Vector3.zero;
-            
+
         }
 
     }
