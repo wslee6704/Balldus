@@ -30,6 +30,14 @@ public class ShapeRenderHelper : MonoBehaviour
         );
     }
 
+    public static void DrawLine(LineRenderer lr, Vector3 startPos, Vector3 endPos)
+    {
+        lr.widthMultiplier = 0.3f;
+        lr.positionCount = 2;
+        lr.SetPosition(0, startPos);
+        lr.SetPosition(1, endPos);
+    }
+
     public static void DrawSemiCircle(LineRenderer lr, Vector3 startPos, Vector3 endPos, float radius)
     {
         lr.widthMultiplier = 0.3f;

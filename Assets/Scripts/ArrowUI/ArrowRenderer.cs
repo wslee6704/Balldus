@@ -13,6 +13,7 @@ public class ArrowRenderer : MonoBehaviour
     private GameObject target;
     Action<Vector3>[] actions = new Action<Vector3>[2];
     private CircleCollider2D coll;
+    PlayerStateController stateController;
 
     [SerializeField]
     InputType type;
@@ -22,6 +23,7 @@ public class ArrowRenderer : MonoBehaviour
     {
         arrowLine = GetComponent<LineRenderer>();
         this.target = transform.parent.gameObject;//자신을 사용하고 있는 부모를 따라간다
+        stateController = target.GetComponent<PlayerStateController>();
         actions[(int)ActionType.Movement] = (endPos) => target.GetComponent<MoveTest>().move(endPos);
         actions[(int)ActionType.Attack] = (pos) => Fire();
         coll = target.GetComponent<CircleCollider2D>();
@@ -69,6 +71,7 @@ public class ArrowRenderer : MonoBehaviour
                     startPointer = target.transform.position;
                 }
             }
+            stateController.ChangeState(PlayerState.Entering);
         }
         else if (Input.GetMouseButton(0))
         {
@@ -82,6 +85,7 @@ public class ArrowRenderer : MonoBehaviour
             //clickEnable = false;
             arrowLine.positionCount = 0;
             actions[(int)actionType]?.Invoke(endPos);
+            stateController.ChangeState(PlayerState.Idle);
         }
     }
 
