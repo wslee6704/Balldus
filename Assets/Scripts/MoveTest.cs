@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class MoveTest : MonoBehaviour
 {
-    float timer=0f;
-    
+    float timer = 0f;
+
     void Start()
     {
-        
+
     }
 
 
     public void move(Vector2 dest)
     {
-        this.transform.DOMove(dest, 1f);
+        this.transform.DOMove(dest, 0.3f);
     }
 }

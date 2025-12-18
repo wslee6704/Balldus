@@ -1145,6 +1145,7 @@ GameObject:
   - component: {fileID: 1471037675}
   - component: {fileID: 1471037674}
   - component: {fileID: 1471037676}
+  - component: {fileID: 1471037677}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1192,6 +1193,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12398e8401495a34ea464f7f2727e7c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ParryManager
+--- !u!114 &1471037677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471037673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e39d48793587f5343a47228d67528122, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LinePoolManager
+  linePrefab: {fileID: 6199878484821295630, guid: 6a6dbedb7cdef2a4ba1b86e842c24b9c, type: 3}
+  prewarmCount: 16
+  poolRoot: {fileID: 0}
 --- !u!1 &2031834865
 GameObject:
   m_ObjectHideFlags: 0

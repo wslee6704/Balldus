@@ -3,28 +3,27 @@ using UnityEngine;
 
 public class AttackTest : MonoBehaviour
 {
-    LineRenderer lr;
+
     [SerializeField]
     GameObject player;
-    AttackData attackData = new AttackData(){attackDelay = 3f, aimDuration = 2f, attackWindupTime = 0.4f, parriableTime = 0.2f, hitTime = 0.5f};
-    
+    AttackData attackData = new AttackData() { attackDelay = 3f, aimDuration = 2f, attackWindupTime = 0.8f, parriableTime = 0.2f, hitTime = 0.5f };
+
     [Header("Raycast")]
     [SerializeField] private float maxDistance = 50f;
     [SerializeField] private LayerMask wallMask;
-    
+
     void Awake()
     {
-        lr = GetComponent<LineRenderer>();
-        lr.startColor = Color.red;
-        lr.endColor = Color.red;
+
     }
 
     void Start()
     {
+
         StartCoroutine(AttackRoutine());
     }
     private Vector2 dir;//플레이어의 고정위치이므로, 조준 확정시간에는 변하지 않음
-    void UpdateAimPosition()
+    void UpdateAimPosition(LineRenderer lr)
     {
         Vector2 origin = transform.position;
         dir = (player.transform.position - transform.position).normalized;
@@ -32,7 +31,7 @@ public class AttackTest : MonoBehaviour
         Vector3 endPos = hit.collider
             ? (Vector3)hit.point
             : (Vector3)(origin + dir * maxDistance);
-        ShapeRenderHelper.DrawLine(lr, origin, endPos);    
+        ShapeRenderHelper.DrawLine(lr, origin, endPos);
     }
 
     public bool CanHitPlayer()
@@ -44,29 +43,34 @@ public class AttackTest : MonoBehaviour
         }
         return false;
     }
-        
-    
-    
+
+
+
 
     private IEnumerator AttackRoutine()
     {
+        LineRenderer lr;
+        lr = LinePoolManager.I.Rent(transform);
+        lr.startColor = Color.red;
+        lr.endColor = Color.red;
         float elapsed = 0f;
-        StartAttack(attackData);
+        //매니저에 공격 등록
+        RegisterAttack(attackData);
         while (elapsed < attackData.aimDuration)
         {
             elapsed += Time.deltaTime;
             //조준선 그리기
-            UpdateAimPosition();
+            UpdateAimPosition(lr);
             yield return null;
         }
         Debug.Log("쏜다!!");
         yield return new WaitForSeconds(attackData.attackWindupTime);
-        
+
         //조준하다가 플레이어 공격
         AttackPlayer();
         //라인 렌더러 지우기
         lr.positionCount = 0;
-        
+
         yield return new WaitForSeconds(attackData.attackDelay);
         StartCoroutine(AttackRoutine());
     }
@@ -74,9 +78,10 @@ public class AttackTest : MonoBehaviour
     //발사, 발사 후, 일정 시간후 패링 가능 시간 존재
     //패링 불가(이때 피격)
 
-    void StartAttack(AttackData attackData)
+    void RegisterAttack(AttackData attackData)
     {
-        EnemyAttackInfo attackInfo = new EnemyAttackInfo(){
+        EnemyAttackInfo attackInfo = new EnemyAttackInfo()
+        {
             owner = this,
             startTime = Time.time,
             fireTime = Time.time + attackData.aimDuration + attackData.attackWindupTime,
@@ -98,13 +103,13 @@ public class AttackTest : MonoBehaviour
         {
             Debug.Log("회피!");
         }
-        
+
     }
 
-    
 
-    
-    
+
+
+
 }
 
 public class EnemyAttackInfo
@@ -125,7 +130,7 @@ public class EnemyAttackInfo
 public class AttackData
 {
     public float attackDelay;//공격이 반복되기까지의 시간
-    public float aimDuration ;//조준하는 시간
+    public float aimDuration;//조준하는 시간
     public float attackWindupTime; //조준 후 ~ 발사 전까지의 텀(Pre-Fire Delay)
     public float parriableTime; //패링 가능 시간
     public float hitTime;
