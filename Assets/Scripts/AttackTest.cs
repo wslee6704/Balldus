@@ -6,8 +6,11 @@ public class AttackTest : MonoBehaviour
     LineRenderer lr;
     [SerializeField]
     GameObject player;
-    AttackData attackData = new AttackData(){attackDelay = 3f, aimDuration = 2f, attackWindupTime = 0.2f, parryStartTime = 0.1f, parryEndTime = 0.1f, hitTime = 0.5f};
+    AttackData attackData = new AttackData(){attackDelay = 3f, aimDuration = 2f, attackWindupTime = 0.4f, parriableTime = 0.2f, hitTime = 0.5f};
     
+    [Header("Raycast")]
+    [SerializeField] private float maxDistance = 50f;
+    [SerializeField] private LayerMask wallMask;
     
     void Awake()
     {
@@ -20,24 +23,50 @@ public class AttackTest : MonoBehaviour
     {
         StartCoroutine(AttackRoutine());
     }
+    private Vector2 dir;//플레이어의 고정위치이므로, 조준 확정시간에는 변하지 않음
+    void UpdateAimPosition()
+    {
+        Vector2 origin = transform.position;
+        dir = (player.transform.position - transform.position).normalized;
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, maxDistance, wallMask);
+        Vector3 endPos = hit.collider
+            ? (Vector3)hit.point
+            : (Vector3)(origin + dir * maxDistance);
+        ShapeRenderHelper.DrawLine(lr, origin, endPos);    
+    }
+
+    public bool CanHitPlayer()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, maxDistance);
+        if (hit.collider != null && hit.collider.gameObject.CompareTag("Player"))
+        {
+            return true;
+        }
+        return false;
+    }
+        
+    
     
 
     private IEnumerator AttackRoutine()
     {
         float elapsed = 0f;
+        StartAttack(attackData);
         while (elapsed < attackData.aimDuration)
         {
             elapsed += Time.deltaTime;
             //조준선 그리기
-            ShapeRenderHelper.DrawLine(lr, transform.position, player.transform.position);
+            UpdateAimPosition();
             yield return null;
         }
+        Debug.Log("쏜다!!");
         yield return new WaitForSeconds(attackData.attackWindupTime);
-
+        
         //조준하다가 플레이어 공격
         AttackPlayer();
         //라인 렌더러 지우기
         lr.positionCount = 0;
+        
         yield return new WaitForSeconds(attackData.attackDelay);
         StartCoroutine(AttackRoutine());
     }
@@ -45,15 +74,15 @@ public class AttackTest : MonoBehaviour
     //발사, 발사 후, 일정 시간후 패링 가능 시간 존재
     //패링 불가(이때 피격)
 
-    void StartAttack()
+    void StartAttack(AttackData attackData)
     {
         EnemyAttackInfo attackInfo = new EnemyAttackInfo(){
             owner = this,
             startTime = Time.time,
             fireTime = Time.time + attackData.aimDuration + attackData.attackWindupTime,
-            parryStartTime = Time.time + 0.3f,
-            parryEndTime = Time.time + 0.4f,
-            hitTime = Time.time + 1.0f
+            parryStartTime = Time.time + attackData.aimDuration,
+            parryEndTime = Time.time + attackData.aimDuration + attackData.attackWindupTime,
+            hitTime = Time.time + attackData.aimDuration + attackData.attackWindupTime
         };
 
         ParryManager.Instance.RegisterAttack(attackInfo);
@@ -61,8 +90,20 @@ public class AttackTest : MonoBehaviour
 
     private void AttackPlayer()
     {
-        Debug.Log("플레이어 공격!");
+        if (CanHitPlayer())
+        {
+            Debug.Log("플레이어 공격성공!");
+        }
+        else
+        {
+            Debug.Log("회피!");
+        }
+        
     }
+
+    
+
+    
     
 }
 
@@ -86,7 +127,6 @@ public class AttackData
     public float attackDelay;//공격이 반복되기까지의 시간
     public float aimDuration ;//조준하는 시간
     public float attackWindupTime; //조준 후 ~ 발사 전까지의 텀(Pre-Fire Delay)
-    public float parryStartTime;
-    public float parryEndTime;
+    public float parriableTime; //패링 가능 시간
     public float hitTime;
 }
