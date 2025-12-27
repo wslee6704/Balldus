@@ -1,51 +1,58 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParryManager : MonoBehaviour
+public class CombatDirector : MonoBehaviour
 {
-    public static ParryManager Instance;
+    public static CombatDirector I { get; private set; }
 
-    private List<EnemyAttackInfo> activeAttacks = new List<EnemyAttackInfo>();
+    private readonly List<AttackInstance> active = new();
 
-    void Awake() => Instance = this;
-
-    public void RegisterAttack(EnemyAttackInfo info)
+    void Awake()
     {
-        activeAttacks.Add(info);
+        if (I != null && I != this) { Destroy(gameObject); return; }
+        I = this;
+    }
+
+    public AttackInstance StartAttack(EnemyAttackPerformer owner, AttackDefinition def)
+    {
+        var inst = new AttackInstance(owner, def);
+        inst.Start(Time.time);
+        active.Add(inst);
+        return inst;
     }
 
     void Update()
     {
+        float now = Time.time;
 
-        float t = Time.time;
-        // 시간이 지나서 끝난 공격은 제거
-        activeAttacks.RemoveAll(a => t > a.hitTime);
-    }
-
-    //패링과 무빙을 칠 때, 자신을 조준하는 공격이 있는지 확인
-    //패링 가능 시간에 움직임을 하였고, 자신을 조준 성공한 공격이 있을때 움직이면 패링 가능한 공격을 return하고 제거할듯
-    public EnemyAttackInfo GetCurrentParryableAttack()
-    {
-        float t = Time.time;
-
-        foreach (var a in activeAttacks)
+        for (int i = active.Count - 1; i >= 0; i--)
         {
-            if (a.IsParryable(t) && a.owner.CanHitPlayer())
+            var a = active[i];
+            a.Tick(now);
+
+            if (a.State == AttackState.Done || a.State == AttackState.Canceled)
             {
-                return a;
+                a.Dispose();
+                active.RemoveAt(i);
             }
-
         }
-
-        return null; // 지금 패링 가능한 공격 없음
     }
 
-    private void AttackByInfo()
+    // 플레이어가 패리 버튼을 누르면 호출
+    public bool TryParry()
     {
+        float now = Time.time;
 
-        foreach (var a in activeAttacks)
+        // 선택 규칙: “패리 가능 + 위협 중”인 것 중 하나
+        for (int i = 0; i < active.Count; i++)
         {
-
+            var a = active[i];
+            if (a.IsParryable(now) && a.IsThreateningNow(now))
+            {
+                a.Cancel();
+                return true;
+            }
         }
+        return false;
     }
 }

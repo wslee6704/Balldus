@@ -11,9 +11,10 @@ public class ParryTest : MonoBehaviour
     void Update()
     {
         //방향을 재고 있을때 패링
-        if(Input.GetKeyDown(KeyCode.Space)&& stateController.currentState == PlayerState.Entering)
+        if (Input.GetKeyDown(KeyCode.Space) && stateController.currentState == PlayerState.Entering)
         {
-            if(ParryManager.Instance.GetCurrentParryableAttack() != null)
+
+            if (CombatDirector.I.TryParry())
             {
                 Debug.Log("Parry Success!");
             }
