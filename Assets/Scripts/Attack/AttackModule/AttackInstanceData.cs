@@ -8,18 +8,23 @@ public abstract class TelegraphSO : ScriptableObject
     public abstract void OnClear(AttackInstance inst); // 반납
 }
 
-public abstract class ThreatTestSO : ScriptableObject
+public interface IThreatCheck
 {
+    public enum CheckType{Laser};
     // "지금 이 공격이 실제로 위협적인가?" (레이저면 Raycast, 휘두르기면 Overlap 등)
-    public abstract bool IsThreateningNow(AttackInstance inst, float now);
+    public bool IsThreateningNow(AttackInstance inst, float now);
 
     // "이 공격에 플레이어가 맞는가?" (발사 시점/즉발 시점에 호출)
-    public abstract bool IsPlayerHit(AttackInstance inst, float now);
+    public bool IsPlayerHit(AttackInstance inst, float now);
 }
 
-public abstract class ExecuteSO : ScriptableObject
+public interface IExecuteFire
 {
+    public enum CheckType{Laser, Bullet};
     // Fired 시점에 호출
-    public abstract void Execute(AttackInstance inst, float now);
-}
+    public void Execute(AttackInstance inst, float now);
 
+    public void CallInstanceEvent();
+    
+    public void CancelAttack();
+}

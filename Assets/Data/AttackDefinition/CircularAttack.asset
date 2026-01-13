@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ecce8d9da4a80a42b7e7b3ae2c3d844, type: 3}
-  m_Name: New Attack Definition
+  m_Name: CircularAttack
   m_EditorClassIdentifier: Assembly-CSharp::AttackDefinition
+  projectile: {fileID: 6338982758342861674, guid: 4fc821726ad388b498b85f6bef886145, type: 3}
   aimFollowDuration: 1.5
-  aimLockDuration: 0.5
-  windupDuration: 0.3
-  cooldown: 1
+  aimLockDuration: 0.4
+  windupDuration: 0.4
   parryStartOffset: 0
   parryEndOffset: 0
-  maxDistance: 50
-  wallMask:
-    serializedVersion: 2
-    m_Bits: 0
-  lineColor: {r: 1, g: 0, b: 0, a: 1}
-  lineWidth: 0.25
+  dodgeStartOffset: 0
+  dodgeEndOffset: 0
+  soundType: 0
+  telegraph: {fileID: 0}
+  theratType: 0
+  fireType: 0
+  parryType: 0

@@ -8,11 +8,11 @@ public class LaserLineTelegraph : TelegraphSO
     public float maxDistance = 50f;
     public LayerMask wallMask;
 
-    private LineRenderer lr;
-
     public override void OnStart(AttackInstance inst)
     {
-        lr = LinePoolManager.I.Rent(inst.owner.transform);
+        var lr = inst.lr;
+        if (!lr) return;
+
         lr.startColor = color;
         lr.endColor = color;
         lr.widthMultiplier = width;
@@ -21,24 +21,39 @@ public class LaserLineTelegraph : TelegraphSO
 
     public override void OnTick(AttackInstance inst, float now)
     {
+        var lr = inst.lr;
         if (!lr) return;
 
         Vector2 origin = inst.owner.AimOrigin;
         Vector2 dir = inst.LockedDir;
 
         RaycastHit2D hit = Physics2D.Raycast(origin, dir, maxDistance, wallMask);
-        Vector3 end = hit.collider ? (Vector3)hit.point : (Vector3)(origin + dir * maxDistance);
+
+        float offset = 1.3f; // ← 벽에서 살짝 띄우고 싶다면 이 값 조절
+
+        Vector3 end;
+        if (hit.collider)
+        {
+            end = hit.point + dir * offset;
+        }
+        else
+        {
+            end = origin + dir * maxDistance;
+        }
 
         lr.positionCount = 2;
         lr.SetPosition(0, origin);
         lr.SetPosition(1, end);
     }
 
+
     public override void OnClear(AttackInstance inst)
     {
+        var lr = inst.lr;
         if (!lr) return;
+
         lr.positionCount = 0;
         LinePoolManager.I.Return(lr);
-        lr = null;
+        inst.lr = null; // ✅ 소유권 정리
     }
 }

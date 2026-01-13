@@ -14,8 +14,9 @@ public class ParryTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && stateController.currentState == PlayerState.Entering)
         {
 
-            if (CombatDirector.I.TryParry())
+            if (ParryManager.I.TryParry())
             {
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.ParrySuccess);
                 Debug.Log("Parry Success!");
             }
             else

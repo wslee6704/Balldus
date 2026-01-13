@@ -126,7 +126,7 @@ public class ArrowRenderer : MonoBehaviour
 
         if (hitCount > 0)
         {
-            Debug.Log("충돌");
+            
             // ★ 여기서 distance는 “완전히 부딪히기 직전까지 이동 가능한 거리”
             //   CircleCast와 달리 radius 계산이 이미 적용된 정확한 거리!
             return castHits[0].distance;

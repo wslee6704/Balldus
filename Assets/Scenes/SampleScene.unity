@@ -603,7 +603,7 @@ GameObject:
   - component: {fileID: 1012702863}
   - component: {fileID: 1012702866}
   - component: {fileID: 1012702865}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -835,7 +835,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1245387607
 Transform:
   m_ObjectHideFlags: 0
@@ -864,8 +864,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackLoop
   performer: {fileID: 0}
-  attack: {fileID: 11400000, guid: cd480b0a128400b4c9d0a10f6c94eeea, type: 2}
-  interval: 3
+  attack: {fileID: 11400000, guid: 5989eabb366beda448d9f07859f1e21f, type: 2}
+  interval: 4
 --- !u!114 &1245387609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1047,6 +1047,7 @@ GameObject:
   - component: {fileID: 1471037674}
   - component: {fileID: 1471037676}
   - component: {fileID: 1471037677}
+  - component: {fileID: 1471037678}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1109,6 +1110,87 @@ MonoBehaviour:
   linePrefab: {fileID: 6199878484821295630, guid: 6a6dbedb7cdef2a4ba1b86e842c24b9c, type: 3}
   prewarm: 16
   poolRoot: {fileID: 0}
+--- !u!114 &1471037678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471037673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d8d60d3774a83b43a7567d2dec2ca57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  bgmClip: {fileID: 0}
+  bgmVolume: 0
+  sfxClips:
+  - {fileID: 8300000, guid: 5fd0ed92dc7760a4389404ed162c9fc7, type: 3}
+  - {fileID: 8300000, guid: f8b217e72dfaa904d8690361f8ad3e64, type: 3}
+  - {fileID: 8300000, guid: 280b3689c8d83a34897d8be646d580f4, type: 3}
+  sfxVolume: 0.5
+  channels: 10
+--- !u!1 &1665691741
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1665691744}
+  - component: {fileID: 1665691743}
+  - component: {fileID: 1665691742}
+  m_Layer: 0
+  m_Name: AttakObject (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1665691742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665691741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6136ba3dd9be8a54c85b4151a60107fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackLoop
+  performer: {fileID: 0}
+  attack: {fileID: 11400000, guid: ba848ac34d4fc85468a91f86f26bf959, type: 2}
+  interval: 5
+--- !u!114 &1665691743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665691741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f3eb142a1bcde41b293f3ad535438b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackPerformer
+  player: {fileID: 1012702860}
+--- !u!4 &1665691744
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665691741}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -15.9, y: 10, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2031834865
 GameObject:
   m_ObjectHideFlags: 0
@@ -1251,7 +1333,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 0722a954ee90de0428a2a7a842057b19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4743,6 +4825,67 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &2056030675
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2056030678}
+  - component: {fileID: 2056030677}
+  - component: {fileID: 2056030676}
+  m_Layer: 0
+  m_Name: AttakObject (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2056030676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056030675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6136ba3dd9be8a54c85b4151a60107fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackLoop
+  performer: {fileID: 0}
+  attack: {fileID: 11400000, guid: ba848ac34d4fc85468a91f86f26bf959, type: 2}
+  interval: 5
+--- !u!114 &2056030677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056030675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f3eb142a1bcde41b293f3ad535438b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackPerformer
+  player: {fileID: 1012702860}
+--- !u!4 &2056030678
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056030675}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -15.9, y: 10, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -4753,4 +4896,6 @@ SceneRoots:
   - {fileID: 362343255}
   - {fileID: 2031834867}
   - {fileID: 1245387607}
+  - {fileID: 2056030678}
+  - {fileID: 1665691744}
   - {fileID: 1471037675}

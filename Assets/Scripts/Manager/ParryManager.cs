@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CombatDirector : MonoBehaviour
+public class ParryManager : MonoBehaviour
 {
-    public static CombatDirector I { get; private set; }
+    public static ParryManager I { get; private set; }
 
     private readonly List<AttackInstance> active = new();
 
@@ -15,6 +15,7 @@ public class CombatDirector : MonoBehaviour
 
     public AttackInstance StartAttack(EnemyAttackPerformer owner, AttackDefinition def)
     {
+        //AudioManager.instance.PlaySfx(AudioManager.Sfx.Reload);
         var inst = new AttackInstance(owner, def);
         inst.Start(Time.time);
         active.Add(inst);
@@ -32,6 +33,7 @@ public class CombatDirector : MonoBehaviour
 
             if (a.State == AttackState.Done || a.State == AttackState.Canceled)
             {
+                Debug.Log($"{a.State}로 반납됨");
                 a.Dispose();
                 active.RemoveAt(i);
             }
@@ -47,7 +49,7 @@ public class CombatDirector : MonoBehaviour
         for (int i = 0; i < active.Count; i++)
         {
             var a = active[i];
-            if (a.IsParryable(now) && a.IsThreateningNow(now))
+            if ( a.IsThreateningNow(now)&&a.IsParryable(now) )
             {
                 a.Cancel();
                 return true;

@@ -32,10 +32,11 @@ public class LinePoolManager : MonoBehaviour
 
     public LineRenderer Rent(Transform owner = null)
     {
+        Debug.Log("라인 대여");
         var lr = free.Count > 0 ? free.Pop() : CreateNew();
         inUse.Add(lr);
 
-        lr.transform.SetParent(owner ? owner : poolRoot, false);
+        //lr.transform.SetParent(owner ? owner : poolRoot, false);
         lr.positionCount = 0;
         lr.gameObject.SetActive(true);
         return lr;
@@ -48,7 +49,7 @@ public class LinePoolManager : MonoBehaviour
 
         lr.positionCount = 0;
         lr.gameObject.SetActive(false);
-        lr.transform.SetParent(poolRoot, false);
+        //lr.transform.SetParent(poolRoot, false);
         free.Push(lr);
     }
 }
