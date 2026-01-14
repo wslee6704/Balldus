@@ -7,6 +7,10 @@ public class LaserLineTelegraph : TelegraphSO
     public float width = 0.25f;
     public float maxDistance = 50f;
     public LayerMask wallMask;
+    public float blinkTiming = 0.2f;
+
+    [SerializeField]
+    DrawFunc[] drawFuncs = new DrawFunc[5];
 
     public override void OnStart(AttackInstance inst)
     {
@@ -20,6 +24,45 @@ public class LaserLineTelegraph : TelegraphSO
     }
 
     public override void OnTick(AttackInstance inst, float now)
+    {
+        
+
+        switch (inst.State)
+        {
+            case AttackState.AimFollow:
+                DrawLine(inst,now);
+                break;
+
+            case AttackState.AimLock:
+
+                break;
+
+            case AttackState.Windup:
+
+                break;
+
+            case AttackState.Fired:
+
+                break;
+
+            case AttackState.Done:
+
+                break;
+        }
+    }
+
+
+    public override void OnClear(AttackInstance inst)
+    {
+        var lr = inst.lr;
+        if (!lr) return;
+
+        lr.positionCount = 0;
+        LinePoolManager.I.Return(lr);
+        inst.lr = null; // ✅ 소유권 정리
+    }
+
+    void DrawLine(AttackInstance inst, float now)
     {
         var lr = inst.lr;
         if (!lr) return;
@@ -46,14 +89,11 @@ public class LaserLineTelegraph : TelegraphSO
         lr.SetPosition(1, end);
     }
 
-
-    public override void OnClear(AttackInstance inst)
+    private enum DrawFunc
     {
-        var lr = inst.lr;
-        if (!lr) return;
-
-        lr.positionCount = 0;
-        LinePoolManager.I.Return(lr);
-        inst.lr = null; // ✅ 소유권 정리
+        None = 0,
+        DrawLine = 1,
+        DrawLineBlink = 2
+        
     }
 }
